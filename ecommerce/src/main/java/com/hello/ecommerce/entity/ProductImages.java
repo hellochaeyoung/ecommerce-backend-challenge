@@ -1,9 +1,15 @@
 package com.hello.ecommerce.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "product_images")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductImages {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,9 +19,11 @@ public class ProductImages {
     private Boolean isPrimary;
     private Integer displayOrder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ProductOptionGroups productOptionGroup;
-
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "option_id")
     private ProductOptions option;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Products products;
 }

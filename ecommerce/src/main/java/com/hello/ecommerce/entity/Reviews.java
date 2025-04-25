@@ -19,7 +19,7 @@ public class Reviews {
     private Integer helpfulVotes;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ProductDetails productDetail;
+    private Products products;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Users user;

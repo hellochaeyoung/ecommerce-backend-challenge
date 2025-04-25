@@ -5,10 +5,10 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "Brands")
+@Table(name = "brands")
 public class Brands {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String slug;
@@ -16,6 +16,6 @@ public class Brands {
     private String logoUrl;
     private String website;
 
-    @OneToMany(mappedBy = "brands", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
     private List<Products> products;
 }

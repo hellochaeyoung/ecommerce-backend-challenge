@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "Tags")
 public class Tags {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String slug;
