@@ -33,16 +33,16 @@ public class Products {
     @ManyToOne(fetch = FetchType.LAZY)
     private Brands brand;
 
-    /*@OneToOne(fetch = FetchType.LAZY)
-    private ProductPrices prices;*/
+    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
+    private ProductPrices prices;
 
-    /*@OneToOne(fetch = FetchType.LAZY)
-    private ProductDetails details;*/
+    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
+    private ProductDetails details;
 
-    /*@OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
-    private List<ProductTags> productTags;*/
+    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    private List<ProductTags> productTags;
 
-    /*@OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
     private List<ProductCategories> categories;
 
     @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
@@ -52,6 +52,6 @@ public class Products {
     private List<ProductOptionGroups> productOptionGroups;
 
     @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
-    private List<Reviews> reviewsList;*/
+    private List<Reviews> reviewsList;
 
 }
