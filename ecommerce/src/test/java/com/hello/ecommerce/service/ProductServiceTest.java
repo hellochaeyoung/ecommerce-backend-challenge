@@ -6,17 +6,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class ProductsServiceTest {
+class ProductServiceTest {
 
     @Autowired
-    private ProductsService productsService;
+    private ProductService productService;
 
     @Test
     void 상품_저장() throws IOException {
@@ -26,7 +25,7 @@ class ProductsServiceTest {
         assertNotNull(inputStream, "JSON 파일을 찾을 수 없습니다!");
 
         ProductSaveDto productSaveDto = mapper.readValue(inputStream, ProductSaveDto.class);
-        productsService.save(productSaveDto);
+        productService.save(productSaveDto);
 
     }
 

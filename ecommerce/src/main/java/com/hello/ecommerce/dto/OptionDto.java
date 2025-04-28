@@ -1,5 +1,6 @@
 package com.hello.ecommerce.dto;
 
+import com.hello.ecommerce.entity.ProductOptionGroups;
 import com.hello.ecommerce.entity.ProductOptions;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,13 +17,14 @@ public class OptionDto {
     private int stock;
     private int displayOrder;
 
-    public ProductOptions toEntity() {
+    public ProductOptions toEntity(ProductOptionGroups groups) {
         return ProductOptions.builder()
                 .name(name)
                 .additionalPrice(additionalPrice)
                 .sku(sku)
                 .stock(stock)
                 .displayOrder(displayOrder)
+                .productOptionGroup(groups)
                 .build();
     }
 }
