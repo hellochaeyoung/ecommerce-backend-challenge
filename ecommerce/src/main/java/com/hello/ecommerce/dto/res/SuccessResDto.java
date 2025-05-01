@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class SuccessResDto {
 
     private boolean success;
-    private DataResDto data;
+    private Object data;
     private String message;
 
 }

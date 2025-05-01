@@ -15,4 +15,8 @@ public class ImageDto {
     private int displayOrder;
     private Long optionId;
 
+    public ImageDto(String altText, String url) {
+        this.altText = altText;
+        this.url = url;
+    }
 }
