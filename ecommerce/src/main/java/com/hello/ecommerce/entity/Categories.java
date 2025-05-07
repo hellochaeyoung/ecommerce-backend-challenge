@@ -3,6 +3,9 @@ package com.hello.ecommerce.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "categories")
 @Getter
@@ -16,8 +19,11 @@ public class Categories {
     private Integer level;
     private String imageUrl;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
     private Categories parent;
 
+    @OneToMany(mappedBy = "parent")
+    private List<Categories> childList = new ArrayList<>();
 
 }
