@@ -1,11 +1,13 @@
 package com.hello.ecommerce.service;
 
+import com.hello.ecommerce.dto.OptionDto;
 import com.hello.ecommerce.dto.OptionGroupDto;
 import com.hello.ecommerce.dto.ProductSaveDto;
 import com.hello.ecommerce.entity.ProductOptionGroups;
 import com.hello.ecommerce.entity.ProductOptions;
 import com.hello.ecommerce.entity.Products;
 import com.hello.ecommerce.repository.ProductOptionGroupsRepository;
+import com.hello.ecommerce.repository.ProductOptionsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ public class ProductOptionGroupService {
 
     private final ProductOptionGroupsRepository productOptionGroupsRepository;
     private final ProductOptionService productOptionService;
+    private final ProductOptionsRepository productOptionsRepository;
 
     public void saveAll(List<OptionGroupDto> optionGroupDtoList, Products saved) {
         optionGroupDtoList.forEach(og -> {

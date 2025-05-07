@@ -1,10 +1,7 @@
 package com.hello.ecommerce.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Getter @Setter
 public class Products {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,25 +30,25 @@ public class Products {
     @ManyToOne(fetch = FetchType.LAZY)
     private Brands brand;
 
-    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private ProductPrices prices;
 
-    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     private ProductDetails details;
 
-    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<ProductTags> productTags;
 
-    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<ProductCategories> categories;
 
-    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<ProductImages> productImages;
 
-    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<ProductOptionGroups> productOptionGroups;
 
-    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "products", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Reviews> reviewsList;
 
 }

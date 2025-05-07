@@ -2,15 +2,18 @@ package com.hello.ecommerce.dto;
 
 import com.hello.ecommerce.entity.ProductOptionGroups;
 import com.hello.ecommerce.entity.ProductOptions;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
+import javax.swing.text.html.Option;
+
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class OptionDto {
 
+    private Long id;
+    private Long optionGroupId;
     private String name;
     private int additionalPrice;
     private String sku;
@@ -26,5 +29,15 @@ public class OptionDto {
                 .displayOrder(displayOrder)
                 .productOptionGroup(groups)
                 .build();
+    }
+
+    public OptionDto(ProductOptions option) {
+        this.id = option.getId();
+        this.optionGroupId = option.getProductOptionGroup().getId();
+        this.name = option.getName();
+        this.additionalPrice = option.getAdditionalPrice();
+        this.sku = option.getSku();
+        this.stock = option.getStock();
+        this.displayOrder = option.getDisplayOrder();
     }
 }

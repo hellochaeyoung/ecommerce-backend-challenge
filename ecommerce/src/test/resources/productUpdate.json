@@ -1,0 +1,42 @@
+{
+  "name": "업데이트된 슈퍼 편안한 소파",
+  "slug": "updated-super-comfortable-sofa",
+  "short_description": "업데이트된 최고급 소재로 만든 편안한 소파",
+  "full_description": "<p>이 소파는 최고급 소재로 제작되었으며...</p>",
+  "seller_id": 1,
+  "brand_id": 2,
+  "status": "ACTIVE",
+  "detail": {
+    "weight": 25.5,
+    "dimensions": {
+      "width": 200,
+      "height": 85,
+      "depth": 90
+    },
+    "materials": "고급 가죽, 단단한 목재, 고밀도 폼",
+    "country_of_origin": "대한민국",
+    "warranty_info": "3년 품질 보증",
+    "care_instructions": "마른 천으로 표면을 닦아주세요",
+    "additional_info": {
+      "assembly_required": true,
+      "assembly_time": "30분"
+    }
+  },
+  "price": {
+    "base_price": 699000,
+    "sale_price": 599000,
+    "cost_price": 450000,
+    "currency": "KRW",
+    "tax_rate": 10
+  },
+  "categories": [
+    {
+      "category_id": 5,
+      "is_primary": true
+    },
+    {
+      "category_id": 8,
+      "is_primary": false
+    }
+  ]
+}

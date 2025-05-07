@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 public class DetailDto {
 
     private Double weight;
-    private DimentionsDto dimensions;
+    private String dimensions;
     private String materials;
     private String countryOfOrigin;
     private String warrantyInfo;
     private String careInstructions;
-    private AdditionalInfoDto additionalInfo;
+    private String additionalInfo;
 
     public ProductDetails toEntity(String dimensions, String additionalInfo, Products products) {
         return ProductDetails.builder()
@@ -30,5 +30,15 @@ public class DetailDto {
                 .additionalInfo(additionalInfo)
                 .product(products)
                 .build();
+    }
+
+    public DetailDto(ProductDetails detail) {
+        this.weight = detail.getWeight();
+        this.dimensions = detail.getDimensions();
+        this.materials = detail.getMaterials();
+        this.countryOfOrigin = detail.getCountryOfOrigin();
+        this.warrantyInfo = detail.getWarrantyInfo();
+        this.careInstructions = detail.getCareInstructions();
+        this.additionalInfo = detail.getAdditionalInfo();
     }
 }

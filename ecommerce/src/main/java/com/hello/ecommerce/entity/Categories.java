@@ -1,9 +1,11 @@
 package com.hello.ecommerce.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
 @Table(name = "categories")
+@Getter
 public class Categories {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

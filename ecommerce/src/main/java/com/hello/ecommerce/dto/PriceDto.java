@@ -16,6 +16,7 @@ public class PriceDto {
     private int costPrice;
     private String currency;
     private int taxRate;
+    private int discountPercentage;
 
     public ProductPrices toEntity(Products products) {
         return ProductPrices.builder()
@@ -26,5 +27,18 @@ public class PriceDto {
                 .taxRate(taxRate)
                 .product(products)
                 .build();
+    }
+
+    public PriceDto(ProductPrices productPrices) {
+        this.basePrice = productPrices.getBasePrice();
+        this.salePrice = productPrices.getSalePrice();
+        this.currency = productPrices.getCurrency();
+        this.taxRate = productPrices.getTaxRate();
+        this.discountPercentage
+                = getSalePercentage(productPrices.getBasePrice(), productPrices.getSalePrice());
+    }
+
+    private int getSalePercentage(int basePrice, int salePrice) {
+        return (basePrice - salePrice) / basePrice * 100;
     }
 }

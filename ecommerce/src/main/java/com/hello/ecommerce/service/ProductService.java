@@ -7,6 +7,7 @@ import com.hello.ecommerce.dto.PaginationDto;
 import com.hello.ecommerce.dto.ProductSaveDto;
 import com.hello.ecommerce.dto.req.ProductListReqDto;
 import com.hello.ecommerce.dto.res.ProductDataResDto;
+import com.hello.ecommerce.dto.res.ProductDetailResDto;
 import com.hello.ecommerce.dto.res.ProductResDto;
 import com.hello.ecommerce.dto.res.SuccessResDto;
 import com.hello.ecommerce.entity.*;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +30,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class ProductService {
 
     private final ProductsRepository productsRepository;
@@ -76,6 +79,39 @@ public class ProductService {
         PaginationDto paginationDto = new PaginationDto(productList.getTotalElements(), productList.getTotalPages(), dto.getPage(), dto.getPerPage());
 
         return new ProductDataResDto(productList.getContent(), paginationDto);
+    }
+
+    public ProductDetailResDto selectProductDetail(Long id) {
+        Products product = productsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("요청한 상품을 찾을 수 없습니다."));
+
+        return ProductDetailResDto.toDto(product);
+
+    }
+
+    public void updateProduct(Long id, ProductSaveDto dto) {
+        Products product = productsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("요청한 상품을 찾을 수 없습니다."));
+
+        Sellers seller = sellerService.selectById(dto.getSellerId());
+
+        Brands brand = brandService.selectById(dto.getBrandId());
+
+        product.setName(dto.getName());
+        product.setSlug(dto.getSlug());
+        product.setShortDescription(dto.getShortDescription());
+        product.setFullDescription(dto.getFullDescription());
+        product.setSeller(seller);
+        product.setBrand(brand);
+        product.setStatus(dto.getStatus());
+        product.getDetails().update(dto.getDetail());
+        product.getPrices().update(dto.getPrice());
+
+        // 카테고리 등 추가 필요
+    }
+
+    public void deleteProduct(Long id) {
+        productsRepository.deleteById(id);
     }
 
 }

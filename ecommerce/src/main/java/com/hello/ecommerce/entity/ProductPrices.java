@@ -1,9 +1,8 @@
 package com.hello.ecommerce.entity;
 
+import com.hello.ecommerce.dto.PriceDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -12,6 +11,7 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter @Setter
 public class ProductPrices {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +25,12 @@ public class ProductPrices {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Products product;
+
+    public void update(PriceDto dto) {
+        setBasePrice(dto.getBasePrice());
+        setSalePrice(dto.getSalePrice());
+        setCostPrice(dto.getCostPrice());
+        setCurrency(dto.getCurrency());
+        setTaxRate(dto.getTaxRate());
+    }
 }
