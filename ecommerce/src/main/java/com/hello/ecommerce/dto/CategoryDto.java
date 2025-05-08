@@ -1,8 +1,10 @@
 package com.hello.ecommerce.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hello.ecommerce.entity.Categories;
 import com.hello.ecommerce.entity.ProductCategories;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +14,8 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryDto {
 
     private Long categoryId;

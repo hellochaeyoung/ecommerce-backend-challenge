@@ -4,10 +4,10 @@ import com.hello.ecommerce.dto.BrandDto;
 import com.hello.ecommerce.dto.ImageDto;
 import com.hello.ecommerce.dto.SellerDto;
 import com.hello.ecommerce.dto.req.ProductListReqDto;
+import com.hello.ecommerce.dto.req.ProductSearchReqDto;
 import com.hello.ecommerce.dto.res.ProductResDto;
 import com.hello.ecommerce.entity.*;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -17,11 +17,12 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,6 +116,86 @@ public class ProductCustomRepository {
 
     }
 
+    public PageImpl<Products> findProductsBySearch(ProductSearchReqDto dto) {
+        BooleanBuilder builder = getBooleanBuilder(dto);
+
+        OrderSpecifier<?> orderSpecifier = getOrderSpecifier(dto.getKeyword(), dto.getSort(), products); // 아래 참고
+
+        List<Products> result = queryFactory
+                .selectFrom(products)
+                .join(products.brand, brands).fetchJoin()
+                .join(products.seller, sellers).fetchJoin()
+                .join(products.prices, productPrices).fetchJoin()
+                .join(products.categories, productCategories).fetchJoin()
+                .join(products.productOptionGroups, productOptionGroups)
+                .join(productOptionGroups.productOptions, productOptions)
+                .where(builder)
+                .orderBy(orderSpecifier)
+                .offset((long) dto.getPage() * dto.getPerPage())
+                .limit(dto.getPerPage())
+                .fetch();
+
+        Long total = queryFactory
+                .select(products.countDistinct())
+                .from(products)
+                .join(products.brand, brands)
+                .join(products.seller, sellers)
+                .join(products.prices, productPrices)
+                .join(products.categories, productCategories)
+                .join(products.productOptionGroups, productOptionGroups)
+                .join(productOptionGroups.productOptions, productOptions)
+                .where(builder)
+                .fetchOne();
+
+        return new PageImpl<>(result, PageRequest.of(dto.getPage(), dto.getPerPage()), total);
+
+    }
+
+    private BooleanBuilder getBooleanBuilder(ProductSearchReqDto dto) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (dto.getKeyword() != null && !dto.getKeyword().isBlank()) {
+            builder.and(
+                    products.name.containsIgnoreCase(dto.getKeyword())
+                            .or(products.slug.containsIgnoreCase(dto.getKeyword()))
+            );
+        }
+
+        List<Long> categoryIds = Arrays.stream(dto.getCategory())
+                .mapToLong(i -> i)       // int → long
+                .boxed()
+                .collect(Collectors.toList());
+        if (dto.getCategory() != null && dto.getCategory().length > 0) {
+            builder.and(productCategories.category.id.in(categoryIds));
+        }
+
+        List<Long> brandIds = Arrays.stream(dto.getBrand())
+                .mapToLong(i -> i)       // int → long
+                .boxed()
+                .collect(Collectors.toList());
+        if (dto.getBrand() != null && dto.getBrand().length > 0) {
+            builder.and(products.brand.id.in(brandIds));
+        }
+
+
+        List<Long> sellerIds = Arrays.stream(dto.getSeller())
+                .mapToLong(i -> i)       // int → long
+                .boxed()
+                .collect(Collectors.toList());
+        if (dto.getSeller() != null && dto.getSeller().length > 0) {
+            builder.and(products.seller.id.in(sellerIds));
+        }
+
+        if (dto.isInStock()) {
+            builder.and(productOptions.stock.gt(0));
+        }
+
+        builder.and(products.prices.basePrice.between(dto.getMinPrice(), dto.getMaxPrice()));
+
+        builder.and(products.seller.rating.goe(dto.getRating()));
+        return builder;
+    }
+
     public BooleanBuilder checkStock(boolean isStock) {
         BooleanBuilder builder = new BooleanBuilder();
         return isStock ? builder.and(productOptions.stock.gt(0)) : builder;
@@ -133,5 +214,31 @@ public class ProductCustomRepository {
         return parts[0] + Arrays.stream(parts, 1, parts.length)
                 .map(s -> s.substring(0,1).toUpperCase() + s.substring(1))
                 .collect(Collectors.joining());
+    }
+
+    public OrderSpecifier<?> getOrderSpecifier(String keyword, String sort, QProducts products) {
+        if (sort == null || sort.isBlank()) {
+            return products.createdAt.desc(); // 기본값
+        }
+
+        String[] parts = sort.split(":");
+        String field = parts[0];
+        boolean desc = parts.length > 1 && parts[1].equalsIgnoreCase("desc");
+
+        switch (field) {
+            case "createdAt":
+                return desc ? products.createdAt.desc() : products.createdAt.asc();
+            case "price":
+                return desc ? products.prices.basePrice.desc() : products.prices.basePrice.asc();
+            case "name":
+                return desc ? products.name.desc() : products.name.asc();
+            case "relevance":
+                return new CaseBuilder()
+                        .when(products.name.containsIgnoreCase(keyword)).then(1)
+                        .when(products.slug.containsIgnoreCase(keyword)).then(2)
+                        .otherwise(3).asc();
+            default:
+                return products.createdAt.desc();
+        }
     }
 }

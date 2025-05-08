@@ -3,6 +3,7 @@ package com.hello.ecommerce.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hello.ecommerce.dto.ProductSaveDto;
 import com.hello.ecommerce.dto.req.ProductListReqDto;
+import com.hello.ecommerce.dto.req.ProductSearchReqDto;
 import com.hello.ecommerce.dto.res.ProductDataResDto;
 import com.hello.ecommerce.dto.res.ProductDetailResDto;
 import com.hello.ecommerce.entity.*;
@@ -10,10 +11,12 @@ import com.hello.ecommerce.repository.BrandsRepository;
 import com.hello.ecommerce.repository.CategoriesRepository;
 import com.hello.ecommerce.repository.ProductsRepository;
 import com.hello.ecommerce.repository.SellersRepository;
+import com.hello.ecommerce.repository.custom.ProductCustomRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -44,6 +47,8 @@ class ProductServiceTest {
 
     @Autowired
     private CategoriesRepository categoriesRepository;
+    @Autowired
+    private ProductCustomRepository productCustomRepository;
 
     @Test
     void 상품_저장() throws IOException {
@@ -130,6 +135,30 @@ class ProductServiceTest {
                     .orElseThrow(() -> new RuntimeException("카테고리 정보가 없습니다."));
 
         });
+
+    }
+
+    @Test
+    void 상품_검색_조회() {
+        String keyword = "소파";
+        int page = 0;
+        int perPage = 10;
+        String sort = "relevance:desc";
+        int[] category = {5,6,8};
+        int minPrice = 10000;
+        int maxPrice = 1000000;
+        int[] brand = {1,2};
+        int[] seller = {1,2,3};
+        boolean inStock = true;
+        double rating = 2.0;
+
+        ProductSearchReqDto dto
+                = new ProductSearchReqDto(keyword, page, perPage, sort, category, minPrice, maxPrice, brand, seller, inStock, rating);
+
+        PageImpl<Products> productsBySearch = productCustomRepository.findProductsBySearch(dto);
+
+        assertThat(productsBySearch.getContent().size()).isGreaterThan(0);
+
 
     }
 

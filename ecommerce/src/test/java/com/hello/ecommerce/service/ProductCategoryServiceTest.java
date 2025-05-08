@@ -1,61 +1,59 @@
 package com.hello.ecommerce.service;
 
-import com.hello.ecommerce.dto.*;
-import com.hello.ecommerce.dto.req.ProductCategoryReqDto;
+import com.hello.ecommerce.dto.BrandDto;
+import com.hello.ecommerce.dto.CategoryDto;
+import com.hello.ecommerce.dto.ImageDto;
+import com.hello.ecommerce.dto.PaginationDto;
 import com.hello.ecommerce.dto.res.ProductCategoryResDto;
 import com.hello.ecommerce.dto.res.ProductResDto;
 import com.hello.ecommerce.entity.Categories;
 import com.hello.ecommerce.entity.ProductCategories;
 import com.hello.ecommerce.entity.ProductImages;
 import com.hello.ecommerce.entity.Products;
+import com.hello.ecommerce.repository.CategoriesRepository;
 import com.hello.ecommerce.repository.ProductCategoriesRepository;
-import lombok.RequiredArgsConstructor;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
-@Service
-@RequiredArgsConstructor
-public class ProductCategoryService {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
-    private final ProductCategoriesRepository productCategoriesRepository;
-    private final CategoryService categoryService;
+@SpringBootTest
+class ProductCategoryServiceTest {
 
-    public void saveAll(List<CategoryDto> categoryDtoList, Products saved) {
-        List<ProductCategories> productCategories = categoryDtoList.stream()
-                .map(cg -> {
-                    Categories category = categoryService.selectById(cg.getCategoryId());
-                    return ProductCategories.builder()
-                            .category(category)
-                            .isPrimary(cg.getIsPrimary())
-                            .products(saved)
-                            .build();
-                }).toList();
-        productCategoriesRepository.saveAll(productCategories);
-    }
+    @Autowired
+    private ProductCategoriesRepository productCategoriesRepository;
 
-    public ProductCategoryResDto findProductsByCategoryId(ProductCategoryReqDto dto) {
-        Pageable pageable = PageRequest.of(dto.getPage(), dto.getPerPage());
-        Page<ProductCategories> result = productCategoriesRepository.findByCategoryId(dto.getCategoryId(), pageable);
+    @Autowired
+    private CategoriesRepository categoriesRepository;
 
-        CategoryDto categoryDto = getCategoryDto(result);
-        List<ProductResDto> productResDtoList = getProductResDtos(dto, result);
-        PaginationDto paginationDto
-                = new PaginationDto(result.getTotalElements(), result.getTotalPages(), dto.getPage() + 1, dto.getPerPage());
+    @Test
+    @Transactional
+    void 카테고리_상품_조회() {
 
-        return new ProductCategoryResDto(categoryDto, productResDtoList, paginationDto);
+        Long categoryId = 17L;
+        int page = 0;
+        int perPage = 10;
+        String sort = "createdAt:desc";
+        boolean includeSubcategories = true;
 
-    }
+        Sort sortCondition = parseSort(sort);
+        Pageable pageable = PageRequest.of(page, perPage);
+        Page<ProductCategories> result = productCategoriesRepository.findByCategoryId(categoryId, pageable);
 
-    private List<ProductResDto> getProductResDtos(ProductCategoryReqDto dto, Page<ProductCategories> result) {
         List<Products> productsList = result.getContent().stream().map(ProductCategories::getProducts).toList();
-        productsList = productsList.stream().sorted(getComparator(dto.getSort())).toList();
-        return productsList.stream().map(product -> {
+        productsList = productsList.stream().sorted(getComparator(sort)).toList();
+        List<ProductResDto> productResDtoList = productsList.stream().map(product -> {
             List<ProductImages> productImages = product.getProductImages().stream().filter(ProductImages::getIsPrimary).toList();
             return new ProductResDto().builder()
                     .id(product.getId())
@@ -72,12 +70,11 @@ public class ProductCategoryService {
                     .createdAt(product.getCreatedAt())
                     .build();
         }).toList();
-    }
 
-    private CategoryDto getCategoryDto(Page<ProductCategories> result) {
+
         ProductCategories productCategories = result.getContent().get(0);
         Categories category = productCategories.getCategory();
-        return CategoryDto.builder().categoryId(category.getId())
+        CategoryDto categoryDto = CategoryDto.builder().categoryId(category.getId())
                 .name(category.getName())
                 .slug(category.getSlug())
                 .description(category.getDescription())
@@ -85,9 +82,15 @@ public class ProductCategoryService {
                 .imageUrl(category.getImageUrl())
                 .parent(new CategoryDto(category.getParent().getSlug(), category.getParent().getName(), category.getParent().getId()))
                 .build();
+
+        PaginationDto paginationDto = new PaginationDto(result.getTotalElements(), result.getTotalPages(), page + 1, perPage);
+
+        ProductCategoryResDto productCategoryResDto = new ProductCategoryResDto(categoryDto, productResDtoList, paginationDto);
+
+        assertThat(result.getTotalElements()).isEqualTo(3);
     }
 
-    private static Comparator<Products> getComparator(String sort) {
+    public static Comparator<Products> getComparator(String sort) {
         Comparator<Products> comparator;
         String[] parts = sort.split(":");
         String sortField = parts[0];
@@ -96,8 +99,25 @@ public class ProductCategoryService {
             case "createdAt" -> Comparator.comparing(Products::getCreatedAt);
             case "name" -> Comparator.comparing(Products::getName);
             case "price" -> Comparator.comparing(p -> p.getPrices().getBasePrice());
-            default -> Comparator.comparing(Products::getCreatedAt);
+            default -> Comparator.comparing(Products::getCreatedAt); // 기본값
         };
         return "desc".equals(desc) ? comparator.reversed() : comparator;
     }
+
+    private Sort parseSort(String sortParam) {
+        if (sortParam == null || sortParam.isEmpty()) {
+            return Sort.unsorted();
+        }
+
+        String[] parts = sortParam.split(":");
+        String property = parts[0];
+        Sort.Direction direction = Sort.Direction.ASC;
+
+        if (parts.length > 1 && parts[1].equalsIgnoreCase("desc")) {
+            direction = Sort.Direction.DESC;
+        }
+
+        return Sort.by(direction, property);
+    }
+
 }

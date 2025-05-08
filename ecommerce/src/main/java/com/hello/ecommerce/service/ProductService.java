@@ -1,30 +1,23 @@
 package com.hello.ecommerce.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hello.ecommerce.dto.OptionDto;
 import com.hello.ecommerce.dto.PaginationDto;
 import com.hello.ecommerce.dto.ProductSaveDto;
 import com.hello.ecommerce.dto.req.ProductListReqDto;
+import com.hello.ecommerce.dto.req.ProductSearchReqDto;
 import com.hello.ecommerce.dto.res.ProductDataResDto;
 import com.hello.ecommerce.dto.res.ProductDetailResDto;
 import com.hello.ecommerce.dto.res.ProductResDto;
-import com.hello.ecommerce.dto.res.SuccessResDto;
 import com.hello.ecommerce.entity.*;
 import com.hello.ecommerce.repository.*;
 import com.hello.ecommerce.repository.custom.ProductCustomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -112,6 +105,10 @@ public class ProductService {
 
     public void deleteProduct(Long id) {
         productsRepository.deleteById(id);
+    }
+
+    public PageImpl<Products> findProductsBySearch(ProductSearchReqDto dto) {
+        return productCustomRepository.findProductsBySearch(dto);
     }
 
 }

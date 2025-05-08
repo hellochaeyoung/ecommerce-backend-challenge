@@ -1,15 +1,19 @@
 package com.hello.ecommerce.dto.res;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hello.ecommerce.dto.BrandDto;
 import com.hello.ecommerce.dto.ImageDto;
 import com.hello.ecommerce.dto.SellerDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductResDto {
 
     private Long id;
