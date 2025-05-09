@@ -8,6 +8,7 @@ import com.hello.ecommerce.dto.req.ProductSearchReqDto;
 import com.hello.ecommerce.dto.res.ProductResDto;
 import com.hello.ecommerce.entity.*;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -43,6 +44,7 @@ public class ProductCustomRepository {
     private final QProductOptionGroups productOptionGroups = QProductOptionGroups.productOptionGroups;
     private final QProductImages productImages = QProductImages.productImages;
     private final QReviews reviews = QReviews.reviews;
+    private final JPAQueryFactory jpaQueryFactory;
 
     public Page<ProductResDto> findProductsByCondition(ProductListReqDto dto, Pageable pageable) {
         List<Long> categoryList = Arrays.stream(dto.getCategory()).asLongStream().boxed().toList();
@@ -150,6 +152,34 @@ public class ProductCustomRepository {
         return new PageImpl<>(result, PageRequest.of(dto.getPage(), dto.getPerPage()), total);
 
     }
+
+    public List<Products> findPopularProducts(int limit) {
+        return jpaQueryFactory.selectFrom(products)
+                .join(products.seller, sellers).fetchJoin()
+                .orderBy(sellers.rating.desc())
+                .limit(limit)
+                .fetch();
+    }
+
+    public List<Tuple> findFeaturedCategories(int limit) {
+        return jpaQueryFactory
+                .select(
+                        productCategories.category.id,
+                        productCategories.category.name,
+                        productCategories.category.slug,
+                        productCategories.category.imageUrl,
+                        products.count())
+                .from(products)
+                .join(products.categories, productCategories)
+                .groupBy(productCategories.category.id,
+                        productCategories.category.name,
+                        productCategories.category.slug,
+                        productCategories.category.imageUrl)
+                .orderBy(products.count().desc())
+                .limit(limit)
+                .fetch();
+    }
+
 
     private BooleanBuilder getBooleanBuilder(ProductSearchReqDto dto) {
         BooleanBuilder builder = new BooleanBuilder();

@@ -27,6 +27,7 @@ public class CategoryDto {
     private String imageUrl;
     private CategoryDto parent;
     private List<CategoryDto> children;
+    private Long productCount;
 
     public CategoryDto(Long categoryId, Boolean isPrimary) {
         this.categoryId = categoryId;

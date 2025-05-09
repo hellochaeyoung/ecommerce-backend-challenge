@@ -25,5 +25,6 @@ public class Reviews {
     private Products products;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private Users user;
 }

@@ -1,17 +1,20 @@
 package com.hello.ecommerce.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hello.ecommerce.dto.BrandDto;
+import com.hello.ecommerce.dto.CategoryDto;
+import com.hello.ecommerce.dto.ImageDto;
 import com.hello.ecommerce.dto.ProductSaveDto;
 import com.hello.ecommerce.dto.req.ProductListReqDto;
 import com.hello.ecommerce.dto.req.ProductSearchReqDto;
-import com.hello.ecommerce.dto.res.ProductDataResDto;
-import com.hello.ecommerce.dto.res.ProductDetailResDto;
+import com.hello.ecommerce.dto.res.*;
 import com.hello.ecommerce.entity.*;
 import com.hello.ecommerce.repository.BrandsRepository;
 import com.hello.ecommerce.repository.CategoriesRepository;
 import com.hello.ecommerce.repository.ProductsRepository;
 import com.hello.ecommerce.repository.SellersRepository;
 import com.hello.ecommerce.repository.custom.ProductCustomRepository;
+import com.querydsl.core.Tuple;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,9 +158,83 @@ class ProductServiceTest {
         ProductSearchReqDto dto
                 = new ProductSearchReqDto(keyword, page, perPage, sort, category, minPrice, maxPrice, brand, seller, inStock, rating);
 
-        PageImpl<Products> productsBySearch = productCustomRepository.findProductsBySearch(dto);
+        //PageImpl<Products> productsBySearch = productCustomRepository.findProductsBySearch(dto);
+        ProductSearchResDto productsBySearch = productService.findProductsBySearch(dto);
 
-        assertThat(productsBySearch.getContent().size()).isGreaterThan(0);
+        assertThat(productsBySearch.getItems().size()).isGreaterThan(0);
+
+
+    }
+
+    @Test
+    @Transactional
+    void 메인_상품_조회() {
+        int limit = 10;
+        List<Products> allByCreatedAtDesc = productsRepository.findAllByOrderByCreatedAtDesc();
+        List<ProductResDto> newProductList = allByCreatedAtDesc.stream().map(product -> {
+            List<ProductImages> primaryImage
+                    = product.getProductImages().stream().filter(ProductImages::getIsPrimary).toList();
+
+            ImageDto imageDto = !primaryImage.isEmpty()
+                    ? new ImageDto(primaryImage.get(0).getAltText(), primaryImage.get(0).getUrl()) : null;
+            return new ProductResDto().builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .slug(product.getSlug())
+                    .shortDescription(product.getShortDescription())
+                    .basePrice(product.getPrices().getBasePrice())
+                    .salePrice(product.getPrices().getSalePrice())
+                    .currency(product.getPrices().getCurrency())
+                    .primaryImage(imageDto)
+                    .brand(new BrandDto(product.getBrand().getId(), product.getBrand().getName()))
+                    .rating(product.getSeller().getRating())
+                    .createdAt(product.getCreatedAt())
+                    .build();
+        }).toList();
+
+
+        List<Products> popularProducts = productCustomRepository.findPopularProducts(limit);
+        List<ProductResDto> popularProductResDtoList = popularProducts.stream().map(product -> {
+            List<ProductImages> primaryImage
+                    = product.getProductImages().stream().filter(ProductImages::getIsPrimary).toList();
+
+            ImageDto imageDto = !primaryImage.isEmpty()
+                    ? new ImageDto(primaryImage.get(0).getAltText(), primaryImage.get(0).getUrl()) : null;
+            return new ProductResDto().builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .slug(product.getSlug())
+                    .shortDescription(product.getShortDescription())
+                    .basePrice(product.getPrices().getBasePrice())
+                    .salePrice(product.getPrices().getSalePrice())
+                    .currency(product.getPrices().getCurrency())
+                    .primaryImage(imageDto)
+                    .brand(new BrandDto(product.getBrand().getId(), product.getBrand().getName()))
+                    .rating(product.getSeller().getRating())
+                    .createdAt(product.getCreatedAt())
+                    .build();
+        }).toList();
+
+
+        List<Tuple> featuredCategories = productCustomRepository.findFeaturedCategories(limit);
+        List<CategoryDto> featuredCategoriesList = featuredCategories.stream().map(tuple -> {
+            Long id = tuple.get(0, Long.class);
+            String name = tuple.get(1, String.class);
+            String slug = tuple.get(2, String.class);
+            String imageUrl = tuple.get(3, String.class);
+            Long productCount = tuple.get(4, Long.class);
+            return new CategoryDto().builder()
+                    .categoryId(id)
+                    .name(name)
+                    .slug(slug)
+                    .imageUrl(imageUrl)
+                    .productCount(productCount)
+                    .build();
+        }).toList();
+
+        ProductMainResDto productMainResDto = new ProductMainResDto(newProductList, popularProductResDtoList, featuredCategoriesList);
+
+        assertThat(productMainResDto.getNewProducts().size()).isGreaterThan(0);
 
 
     }
