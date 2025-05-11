@@ -1,17 +1,14 @@
 package com.hello.ecommerce.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "product_categories")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Getter @Setter
 public class ProductCategories {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +22,5 @@ public class ProductCategories {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Categories category;
-
 
 }

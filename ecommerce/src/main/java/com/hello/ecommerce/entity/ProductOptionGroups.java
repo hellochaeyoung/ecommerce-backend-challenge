@@ -1,11 +1,9 @@
 package com.hello.ecommerce.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Getter @Setter
 public class ProductOptionGroups {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +25,12 @@ public class ProductOptionGroups {
 
     @OneToMany(mappedBy = "productOptionGroup", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<ProductOptions> productOptions;
+
+    public void setProductOptions(List<ProductOptions> productOptions) {
+        if(this.productOptions == null){
+            this.productOptions = new ArrayList<>();
+        }
+        this.productOptions.addAll(productOptions);
+        productOptions.forEach(op -> op.setProductOptionGroup(this));
+    }
 }

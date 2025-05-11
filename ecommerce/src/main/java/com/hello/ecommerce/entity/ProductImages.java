@@ -2,17 +2,14 @@ package com.hello.ecommerce.entity;
 
 import com.hello.ecommerce.dto.ImageDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "product_images")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Getter @Setter
 public class ProductImages {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

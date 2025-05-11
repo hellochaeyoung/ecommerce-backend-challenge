@@ -1,6 +1,7 @@
 package com.hello.ecommerce.dto;
 
 import com.hello.ecommerce.entity.ProductDetails;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductSaveDto {
 
+    @NotBlank
     private String name;
     private String slug;
     private String shortDescription;

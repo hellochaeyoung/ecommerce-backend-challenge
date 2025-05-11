@@ -1,6 +1,6 @@
 {
   "name": "슈퍼 편안한 소파",
-  "slug": "super-comfortable-sofa7",
+  "slug": "super-comfortable-sofa9",
   "shortDescription": "최고급 소재로 만든 편안한 소파",
   "fullDescription": "<p>이 소파는 최고급 소재로 제작되었으며...</p>",
   "sellerId": 1,
@@ -18,8 +18,8 @@
     "warrantyInfo": "2년 품질 보증",
     "careInstructions": "마른 천으로 표면을 닦아주세요",
     "additionalInfo": {
-      "assemblyRequired": true,
-      "assemblyTime": "30분"
+      "assembly_required": true,
+      "assembly_time": "30분"
     }
   },
   "price": {

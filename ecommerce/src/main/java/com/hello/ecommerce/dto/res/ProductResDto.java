@@ -31,8 +31,16 @@ public class ProductResDto {
     private boolean inStock;
     private String status;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    /*public ProductResDto(Long id, String name, String slug, String shortDescription, int basePrice, int salePrice, String currency, ImageDto primaryImage, BrandDto brand, SellerDto seller, boolean inStock, String status, LocalDateTime createdAt) {
+    public ProductResDto(Long id, String name, String slug, LocalDateTime updatedAt) {
+        this.id = id;
+        this.name = name;
+        this.slug = slug;
+        this.updatedAt = updatedAt;
+    }
+
+    public ProductResDto(Long id, String name, String slug, String shortDescription, int basePrice, int salePrice, String currency, ImageDto primaryImage, BrandDto brand, SellerDto seller, double rating, int reviewCount, boolean inStock, String status, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.slug = slug;
@@ -43,8 +51,10 @@ public class ProductResDto {
         this.primaryImage = primaryImage;
         this.brand = brand;
         this.seller = seller;
+        this.rating = rating;
+        this.reviewCount = reviewCount;
         this.inStock = inStock;
         this.status = status;
         this.createdAt = createdAt;
-    }*/
+    }
 }

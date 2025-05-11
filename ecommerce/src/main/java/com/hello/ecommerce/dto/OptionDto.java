@@ -20,14 +20,24 @@ public class OptionDto {
     private int stock;
     private int displayOrder;
 
-    public ProductOptions toEntity(ProductOptionGroups groups) {
+    public ProductOptions toEntity() {
         return ProductOptions.builder()
                 .name(name)
                 .additionalPrice(additionalPrice)
                 .sku(sku)
                 .stock(stock)
                 .displayOrder(displayOrder)
-                .productOptionGroup(groups)
+                .build();
+    }
+
+    public ProductOptions toEntity(ProductOptionGroups productOptionGroups) {
+        return ProductOptions.builder()
+                .name(name)
+                .additionalPrice(additionalPrice)
+                .sku(sku)
+                .stock(stock)
+                .displayOrder(displayOrder)
+                .productOptionGroup(productOptionGroups)
                 .build();
     }
 

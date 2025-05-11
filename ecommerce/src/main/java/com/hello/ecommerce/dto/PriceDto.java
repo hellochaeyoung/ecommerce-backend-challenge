@@ -2,6 +2,7 @@ package com.hello.ecommerce.dto;
 
 import com.hello.ecommerce.entity.ProductPrices;
 import com.hello.ecommerce.entity.Products;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,12 +12,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PriceDto {
 
+    @Min(1)
     private int basePrice;
     private int salePrice;
     private int costPrice;
     private String currency;
     private int taxRate;
     private int discountPercentage;
+
+    public ProductPrices toEntity() {
+        return ProductPrices.builder()
+                .basePrice(basePrice)
+                .salePrice(salePrice)
+                .costPrice(costPrice)
+                .currency(currency)
+                .taxRate(taxRate)
+                .build();
+    }
 
     public ProductPrices toEntity(Products products) {
         return ProductPrices.builder()
