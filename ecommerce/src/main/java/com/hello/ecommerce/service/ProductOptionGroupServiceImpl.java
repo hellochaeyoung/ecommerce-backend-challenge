@@ -1,10 +1,7 @@
 package com.hello.ecommerce.service;
 
-import com.hello.ecommerce.dto.OptionDto;
 import com.hello.ecommerce.dto.OptionGroupDto;
-import com.hello.ecommerce.dto.ProductSaveDto;
 import com.hello.ecommerce.entity.ProductOptionGroups;
-import com.hello.ecommerce.entity.ProductOptions;
 import com.hello.ecommerce.entity.Products;
 import com.hello.ecommerce.repository.ProductOptionGroupsRepository;
 import com.hello.ecommerce.repository.ProductOptionsRepository;
@@ -13,5 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public interface ProductOptionGroupService {
+@Service
+@RequiredArgsConstructor
+public class ProductOptionGroupServiceImpl implements ProductOptionGroupService {
+
 }

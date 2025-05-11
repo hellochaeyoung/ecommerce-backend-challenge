@@ -7,17 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class TagService {
-
-    private final TagsRepository tagsRepository;
-
-    public void saveAll(List<Tags> tagsList) {
-        tagsRepository.saveAll(tagsList);
-    }
-
-    public List<Tags> findAllById(List<Long> tagIdList) {
-        return tagsRepository.findAllById(tagIdList);
-    }
+public interface TagService {
+    List<Tags> findAllById(List<Long> tagIdList);
 }

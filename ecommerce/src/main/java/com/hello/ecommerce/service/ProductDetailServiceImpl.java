@@ -9,5 +9,9 @@ import com.hello.ecommerce.repository.ProductDetailsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-public interface ProductDetailService {
+@Service
+@RequiredArgsConstructor
+public class ProductDetailServiceImpl implements ProductDetailService {
+
+    private final ProductDetailsRepository productDetailsRepository;
 }

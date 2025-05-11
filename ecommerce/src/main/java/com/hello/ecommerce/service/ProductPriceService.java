@@ -7,14 +7,6 @@ import com.hello.ecommerce.repository.ProductPricesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
-public class ProductPriceService {
-
-    private final ProductPricesRepository productPricesRepository;
-
-    public void save(ProductSaveDto dto, Products saved) {
-        ProductPrices productPrice = dto.getPrice().toEntity(saved);
-        productPricesRepository.save(productPrice);
-    }
+public interface ProductPriceService {
+    void save(ProductSaveDto dto, Products saved);
 }
