@@ -45,10 +45,12 @@ public class CategoryDto {
         this.name = categories.getName();
         this.slug = categories.getSlug();
         this.isPrimary = isPrimary;
-        this.parent = new CategoryDto(categories.getParent().getSlug(),
-                categories.getParent().getName(),
-                categories.getParent().getId()
-                );
+        if(categories.getParent() != null) {
+            this.parent = new CategoryDto(categories.getParent().getSlug(),
+                    categories.getParent().getName(),
+                    categories.getParent().getId()
+            );
+        }
     }
 
     public CategoryDto(Categories categories, List<CategoryDto> children) {
