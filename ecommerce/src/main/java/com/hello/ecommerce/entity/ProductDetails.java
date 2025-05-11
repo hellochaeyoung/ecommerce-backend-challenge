@@ -2,14 +2,13 @@ package com.hello.ecommerce.entity;
 
 import com.hello.ecommerce.dto.DetailDto;
 import com.hello.ecommerce.dto.DimentionsDto;
-import com.hello.ecommerce.dto.ProductSaveDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
 import org.hibernate.type.SqlTypes;
 
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "product_details")
@@ -24,13 +23,17 @@ public class ProductDetails {
     private Double weight;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    private String dimensions;
+    @Column(columnDefinition = "jsonb")
+    private DimentionsDto dimensions;
+
     private String materials;
     private String countryOfOrigin;
     private String warrantyInfo;
     private String careInstructions;
+
     @JdbcTypeCode(SqlTypes.JSON)
-    private String additionalInfo;
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> additionalInfo;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")

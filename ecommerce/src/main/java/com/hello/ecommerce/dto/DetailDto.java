@@ -6,20 +6,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class DetailDto {
 
     private Double weight;
-    private String dimensions;
+    private DimentionsDto dimensions;
     private String materials;
     private String countryOfOrigin;
     private String warrantyInfo;
     private String careInstructions;
-    private String additionalInfo;
+    private Map<String, Object> additionalInfo;
 
-    public ProductDetails toEntity(String dimensions, String additionalInfo, Products products) {
+    public ProductDetails toEntity(DimentionsDto dimensions, Map<String, Object> additionalInfo) {
         return ProductDetails.builder()
                 .weight(getWeight())
                 .dimensions(dimensions)
@@ -28,7 +30,6 @@ public class DetailDto {
                 .warrantyInfo(getWarrantyInfo())
                 .careInstructions(getCareInstructions())
                 .additionalInfo(additionalInfo)
-                .product(products)
                 .build();
     }
 
