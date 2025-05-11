@@ -1,13 +1,16 @@
 package com.hello.ecommerce.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reviews")
-@Getter
+@Getter @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Reviews {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
