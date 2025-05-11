@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -50,8 +51,10 @@ class ProductServiceTest {
 
     @Autowired
     private CategoriesRepository categoriesRepository;
+
     @Autowired
-    private ProductCustomRepository productCustomRepository;
+    private ObjectMapper objectMapper;
+
 
     @Test
     void 상품_저장() throws IOException {
@@ -103,14 +106,13 @@ class ProductServiceTest {
 
     @Test
     @Transactional
+    @Rollback(value = false)
     void 상품_수정() throws IOException {
-
-        ObjectMapper mapper = new ObjectMapper();
 
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("productUpdate.json");
         assertNotNull(inputStream, "JSON 파일을 찾을 수 없습니다!");
 
-        ProductSaveDto dto = mapper.readValue(inputStream, ProductSaveDto.class);
+        ProductSaveDto dto = objectMapper.readValue(inputStream, ProductSaveDto.class);
 
         Long id = 1L;
         Products product = productsRepository.findById(id)
@@ -133,11 +135,15 @@ class ProductServiceTest {
         product.getPrices().update(dto.getPrice());
 
 
-        dto.getCategories().forEach(cg -> {
+        List<ProductCategories> categoryList = dto.getCategories().stream().map(cg -> {
             Categories category = categoriesRepository.findById(cg.getCategoryId())
                     .orElseThrow(() -> new RuntimeException("카테고리 정보가 없습니다."));
-
-        });
+            return ProductCategories.builder()
+                    .category(category)
+                    .isPrimary(cg.getIsPrimary())
+                    .build();
+        }).toList();
+        product.setCategories(categoryList);
 
     }
 
@@ -193,7 +199,7 @@ class ProductServiceTest {
         }).toList();
 
 
-        List<Products> popularProducts = productCustomRepository.findPopularProducts(limit);
+        List<Products> popularProducts = productsRepository.findPopularProducts(limit);
         List<ProductResDto> popularProductResDtoList = popularProducts.stream().map(product -> {
             List<ProductImages> primaryImage
                     = product.getProductImages().stream().filter(ProductImages::getIsPrimary).toList();
@@ -216,7 +222,7 @@ class ProductServiceTest {
         }).toList();
 
 
-        List<Tuple> featuredCategories = productCustomRepository.findFeaturedCategories(limit);
+        List<Tuple> featuredCategories = productsRepository.findFeaturedCategories(limit);
         List<CategoryDto> featuredCategoriesList = featuredCategories.stream().map(tuple -> {
             Long id = tuple.get(0, Long.class);
             String name = tuple.get(1, String.class);

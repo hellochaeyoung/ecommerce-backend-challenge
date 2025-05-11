@@ -3,6 +3,7 @@ package com.hello.ecommerce.repository.custom;
 import com.hello.ecommerce.dto.req.ProductListReqDto;
 import com.hello.ecommerce.dto.res.ProductResDto;
 import com.hello.ecommerce.entity.Products;
+import com.hello.ecommerce.repository.ProductsRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ProductCustomRepositoryTest {
 
     @Autowired
-    ProductCustomRepository productCustomRepository;
+    ProductsRepository productsRepository;
 
     @Test
     void 상품_목록_조회() {
@@ -40,7 +41,7 @@ class ProductCustomRepositoryTest {
 
         Pageable pageable = PageRequest.of(dto.getPage() - 1, dto.getPerPage());
 
-        Page<ProductResDto> productsByCondition = productCustomRepository.findProductsByCondition(dto, pageable);
+        Page<ProductResDto> productsByCondition = productsRepository.findProductsByCondition(dto, pageable);
 
         assertThat(productsByCondition.getContent().size()).isEqualTo(8);
     }
